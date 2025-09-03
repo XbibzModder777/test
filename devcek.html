@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Facebook Downloader – Cepat & Gratis</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --card: #1a1a1a;
+      --primary: #1877f2;
+      --accent: #00d4ff;
+      --text: #ffffff;
+      --sub: #b0b0b0;
+      --radius: 16px;
+      --transition: all .35s cubic-bezier(.4,0,.2,1);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 40px 30px;
+      box-shadow: 0 0 40px rgba(0,212,255,.25);
+      transition: var(--transition);
+      animation: fadeIn .8s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+      letter-spacing: .5px;
+    }
+    p.sub {
+      text-align: center;
+      color: var(--sub);
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 50px 16px 20px;
+      border: 2px solid transparent;
+      border-radius: var(--radius);
+      background: #111;
+      color: var(--text);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    button {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    button:hover {
+      background: var(--accent);
+      color: #000;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 18px;
+      color: var(--accent);
+    }
+    .loading i {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .result {
+      display: none;
+      animation: fadeIn .6s ease;
+    }
+    .result img.thumb {
+      width: 100%;
+      border-radius: var(--radius);
+      margin-bottom: 15px;
+    }
+    .result h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .buttons a {
+      flex: 1 1 200px;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px;
+      border-radius: var(--radius);
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .buttons a:hover {
+      background: var(--accent);
+      color: #000;
+      transform: translateY(-3px);
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 13px;
+      color: var(--sub);
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 24px; }
+      .container { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fab fa-facebook"></i> Facebook Downloader</h1>
+    <p class="sub">Tempel link Facebook & unduh video HD tanpa watermark!</p>
+
+    <div class="input-group">
+      <input id="url" type="text" placeholder="Contoh: https://www.facebook.com/100063699181598/videos/828283828282828/"/>
+      <button onclick="downloadVideo()"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <div id="loading" class="loading"><i class="fas fa-spinner"></i> Mengambil data...</div>
+
+    <div id="result" class="result">
+      <img id="thumb" class="thumb" src="" alt="Thumbnail"/>
+      <h3 id="title"></h3>
+      <div class="buttons">
+        <a id="hd" href="#" target="_blank"><i class="fas fa-download"></i> Download HD</a>
+        <a id="sd" href="#" target="_blank"><i class="fas fa-download"></i> Download SD</a>
+      </div>
+    </div>
+
+    <footer>© 2025 FB Downloader – Gratis & Tanpa Batas</footer>
+  </div>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById('url').value.trim();
+      if (!url) return alert('Masukkan URL Facebook dulu!');
+
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+      loading.style.display = 'block';
+      result.style.display = 'none';
+
+      try {
+        const api = `https://api.fbdown.net/download?url=${encodeURIComponent(url)}`;
+        const res = await fetch(api);
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        document.getElementById('thumb').src = data.thumbnail;
+        document.getElementById('title').textContent = data.title || 'Video Facebook';
+        document.getElementById('hd').href = data.hd || data.sd;
+        document.getElementById('sd').href = data.sd;
+
+        loading.style.display = 'none';
+        result.style.display = 'block';
+      } catch (e) {
+        loading.style.display = 'none';
+        alert('Gagal mengambil video. Pastikan URL valid & bersifat publik!');
+      }
+    }
+  </script>
+</body>
+</html>
